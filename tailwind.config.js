@@ -1,5 +1,7 @@
 // tailwind.config.js
 /** @type {import('tailwindcss').Config} */
+import animate from "tailwindcss-animate";
+
 module.exports = {
   darkMode: ["class"],
   content: [
@@ -71,7 +73,11 @@ module.exports = {
         "accordion-down": "accordion-down 0.2s ease-out",
         "accordion-up": "accordion-up 0.2s ease-out",
       },
+      backgroundImage: {
+        "grid-pattern": "url('/grid-pattern.svg')",
+        "grid-pattern-light": "url('/grid-pattern-light.svg')",
+      },
     },
   },
-  plugins: [require("tailwindcss-animate")],
+  plugins: [animate],
 };

@@ -4,24 +4,24 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
+  --foreground-rgb: 255, 255, 255;
+  --background-start-rgb: 0, 0, 0;
+  --background-end-rgb: 17, 24, 39;
 }
 
 body {
   color: rgb(var(--foreground-rgb));
-  background-color: #f9fafb;
+  background: linear-gradient(
+    to bottom,
+    rgb(var(--background-start-rgb)),
+    rgb(var(--background-end-rgb))
+  );
+  min-height: 100vh;
 }
 
 /* Custom Form Styles */
 .form-input {
-  @apply rounded-md border border-gray-300 shadow-sm focus:border-primary focus:ring-primary;
-}
-
-/* Switch the default focus ring to our primary color */
-*:focus {
-  @apply outline-none ring-2 ring-offset-2 ring-primary ring-opacity-50;
+  @apply rounded-md border border-gray-700 bg-gray-800 text-white shadow-sm focus:border-primary focus:ring-primary;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -31,13 +31,13 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-100 rounded-full;
+  @apply bg-gray-800 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-300 rounded-full;
+  @apply bg-gray-600 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-400;
+  @apply bg-gray-500;
 }

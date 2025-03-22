@@ -378,3 +378,43 @@ export const sampleConfig: PhilanthropicSimulationConfig = {
   impactPremium: -0.01,
   correlationMatrix: defaultCorrelationMatrix,
 };
+
+// Enum-like objects for form values
+export const AssetClassValues = {
+  equity: "equity",
+  fixedIncome: "fixedIncome",
+  privateEquity: "privateEquity",
+  realEstate: "realEstate",
+  hedge: "hedge",
+  cash: "cash",
+} as const;
+
+export const CharitableVehicleTypeValues = {
+  privateFoundation: "privateFoundation",
+  donorAdvisedFund: "donorAdvisedFund",
+  charitableTrust: "charitableTrust",
+} as const;
+
+export const InvestmentStrategyValues = {
+  conservative: "conservative",
+  balanced: "balanced",
+  growth: "growth",
+} as const;
+
+export const SuccessorPolicyValues = {
+  familyOnly: "familyOnly",
+  familyAndProfessional: "familyAndProfessional",
+  professionalOnly: "professionalOnly",
+} as const;
+
+export const GovernanceStructureValues = {
+  familyBoard: "familyBoard",
+  mixedBoard: "mixedBoard",
+  professionalBoard: "professionalBoard",
+} as const;
+
+export const WithdrawalStrategyValues = {
+  endowmentModel: "endowmentModel",
+  percentOfAssets: "percentOfAssets",
+  inflationAdjusted: "inflationAdjusted",
+} as const;
