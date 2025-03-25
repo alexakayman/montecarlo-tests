@@ -1,8 +1,11 @@
 import {
   Asset,
   AssetClass,
+  CharitableVehicle,
+  FamilyMember,
   PhilanthropicSimulationConfig,
   SimulationResult,
+  InvestmentStrategyConfig,
 } from "@/types";
 
 // Random normal distribution generator (Box-Muller transform)
@@ -47,10 +50,19 @@ function generateCorrelatedReturns(
 // Simulate portfolio performance including charitable vehicles
 function simulatePortfolioPerformance(
   assets: Asset[],
-  charitableVehicles: any[],
+  charitableVehicles: CharitableVehicle[],
   correlationMatrix: number[][],
   simulationYears: number,
-  inflationRate: number
+  inflationRate: number,
+  investmentStrategies: Record<
+    string,
+    {
+      returns: Record<AssetClass, number>;
+      volatility: Record<AssetClass, number>;
+      allocation: Record<AssetClass, number>;
+    }
+  >,
+  impactPremium: number
 ): {
   portfolioByYear: number[];
   charitableAssetsByYear: number[];
@@ -82,7 +94,7 @@ function simulatePortfolioPerformance(
 
       // Apply impact investment premium/discount if applicable
       const adjustedReturn = asset.impactFocused
-        ? return_rate - 0.01 // 1% lower returns for impact investments
+        ? return_rate + impactPremium
         : return_rate;
 
       // Update asset value
@@ -95,8 +107,14 @@ function simulatePortfolioPerformance(
     let totalDistributions = 0;
 
     for (const vehicle of charitableVehicles) {
-      // Apply investment returns based on strategy
-      const strategy = vehicle.investmentStrategy;
+      // Get the investment strategy for this vehicle
+      const strategy = investmentStrategies[vehicle.investmentStrategy];
+      if (!strategy) {
+        console.warn(
+          `No strategy found for ${vehicle.investmentStrategy}, using conservative as fallback`
+        );
+        continue;
+      }
 
       let vehicleReturn = 0;
       let totalWeight = 0;
@@ -154,50 +172,47 @@ function simulatePortfolioPerformance(
   };
 }
 
-// Model family member longevity and succession
 function modelFamilySuccession(
-  familyMembers: any[],
+  familyMembers: FamilyMember[],
   simulationYears: number
 ): {
-  aliveByYear: any[][];
-  successorsByYear: any[][];
+  aliveByYear: FamilyMember[][];
+  successorsByYear: FamilyMember[][];
   totalInvolvementByYear: number[];
 } {
-  // Deep copy family members to avoid modifying original
-  const members = JSON.parse(JSON.stringify(familyMembers));
+  const members = JSON.parse(JSON.stringify(familyMembers)) as FamilyMember[];
 
-  // Initialize results
-  const aliveByYear: any[][] = [members];
-  const successorsByYear: any[][] = [members.filter((m) => m.successorFlag)];
+  const aliveByYear: FamilyMember[][] = [members];
+  const successorsByYear: FamilyMember[][] = [
+    members.filter((m: FamilyMember) => m.successorFlag),
+  ];
   const totalInvolvementByYear: number[] = [
-    members.reduce((sum, member) => sum + member.timeCommitment, 0),
+    members.reduce(
+      (sum: number, member: FamilyMember) => sum + member.timeCommitment,
+      0
+    ),
   ];
 
   // For each year
   for (let year = 1; year <= simulationYears; year++) {
     const previousYearMembers = aliveByYear[year - 1];
-    const aliveThisYear: any[] = [];
+    const aliveThisYear: FamilyMember[] = [];
 
-    // Check which members are still alive
     for (const member of previousYearMembers) {
       member.age += 1;
 
-      // Simple longevity model - if age exceeds life expectancy, member passes away
       if (member.age <= member.lifeExpectancy) {
         aliveThisYear.push(member);
       }
     }
 
-    // Identify successors
     const successorsThisYear = aliveThisYear.filter((m) => m.successorFlag);
 
-    // Calculate total involvement
     const totalInvolvement = aliveThisYear.reduce(
       (sum, member) => sum + member.timeCommitment,
       0
     );
 
-    // Save results for this year
     aliveByYear.push(aliveThisYear);
     successorsByYear.push(successorsThisYear);
     totalInvolvementByYear.push(totalInvolvement);
@@ -210,16 +225,11 @@ function modelFamilySuccession(
   };
 }
 
-// Calculate impact metrics for the philanthropic giving
 function calculateImpactMetrics(
   distributionsByYear: number[],
   causeAreas: string[],
   missionAlignment: number
 ): number {
-  // This is a simplified impact model
-  // In reality, impact would be a complex function of many variables
-
-  // Total distributions
   const totalDistributions = distributionsByYear.reduce(
     (sum, dist) => sum + dist,
     0
@@ -238,11 +248,10 @@ function calculateImpactMetrics(
   return impactScore;
 }
 
-// Calculate balance between family needs and philanthropic goals
 function calculateFamilyPhilanthropyBalance(
   familyAssetsByYear: number[],
   charitableAssetsByYear: number[],
-  familyMembers: any[],
+  familyMembers: FamilyMember[],
   philanthropicAllocation: number
 ): number {
   // Calculate final ratio of family to charitable assets
@@ -283,6 +292,55 @@ function calculateFamilyPhilanthropyBalance(
   return balanceScore;
 }
 
+// Convert form's investment strategies to simulation format
+function convertInvestmentStrategies(
+  strategies: InvestmentStrategyConfig[]
+): Record<
+  string,
+  {
+    returns: Record<AssetClass, number>;
+    volatility: Record<AssetClass, number>;
+    allocation: Record<AssetClass, number>;
+  }
+> {
+  const defaultReturns: Record<AssetClass, number> = {
+    equity: 0.07,
+    fixedIncome: 0.03,
+    privateEquity: 0.1,
+    realEstate: 0.05,
+    hedge: 0.06,
+    cash: 0.01,
+  };
+
+  const defaultVolatility: Record<AssetClass, number> = {
+    equity: 0.18,
+    fixedIncome: 0.05,
+    privateEquity: 0.25,
+    realEstate: 0.14,
+    hedge: 0.14,
+    cash: 0.01,
+  };
+
+  return strategies.reduce(
+    (acc, strategy) => {
+      acc[strategy.name] = {
+        returns: defaultReturns,
+        volatility: defaultVolatility,
+        allocation: strategy.assetAllocation,
+      };
+      return acc;
+    },
+    {} as Record<
+      string,
+      {
+        returns: Record<AssetClass, number>;
+        volatility: Record<AssetClass, number>;
+        allocation: Record<AssetClass, number>;
+      }
+    >
+  );
+}
+
 // Main Monte Carlo simulation function
 export function runPhilanthropyLegacyMonteCarlo(
   config: PhilanthropicSimulationConfig
@@ -306,6 +364,17 @@ export function runPhilanthropyLegacyMonteCarlo(
     correlationMatrix,
   } = config;
 
+  // Validate inputs
+  if (!assets.length || !charitableVehicles.length || !familyMembers.length) {
+    throw new Error(
+      "Assets, charitable vehicles, and family members are required"
+    );
+  }
+
+  // Convert investment strategies to simulation format
+  const simulationStrategies =
+    convertInvestmentStrategies(investmentStrategies);
+
   let totalPhilanthropicImpact = 0;
   let totalFamilyWealth = 0;
   let totalPhilanthropicCapital = 0;
@@ -323,16 +392,13 @@ export function runPhilanthropyLegacyMonteCarlo(
 
   let optimalWithdrawalRateSum = 0;
 
-  // Evaluate different charitable vehicles
-  const vehicleMixes: Record<string, number>[] = [];
-
   // Run multiple simulations
   for (let run = 0; run < simulationRuns; run++) {
     // Deep copy assets and vehicles for this simulation
     const simulationAssets = JSON.parse(JSON.stringify(assets)) as Asset[];
     const simulationVehicles = JSON.parse(
       JSON.stringify(charitableVehicles)
-    ) as any[];
+    ) as CharitableVehicle[];
 
     // Simulate portfolio performance
     const {
@@ -345,7 +411,9 @@ export function runPhilanthropyLegacyMonteCarlo(
       simulationVehicles,
       correlationMatrix,
       simulationYears,
-      inflationRate
+      inflationRate,
+      simulationStrategies,
+      impactPremium
     );
 
     // Determine if this simulation meets family needs
@@ -385,8 +453,10 @@ export function runPhilanthropyLegacyMonteCarlo(
     );
 
     // Model family succession
-    const { aliveByYear, successorsByYear, totalInvolvementByYear } =
-      modelFamilySuccession(familyMembers, simulationYears);
+    const { successorsByYear, totalInvolvementByYear } = modelFamilySuccession(
+      familyMembers,
+      simulationYears
+    );
 
     // Calculate successor readiness
     const finalSuccessors = successorsByYear[successorsByYear.length - 1];

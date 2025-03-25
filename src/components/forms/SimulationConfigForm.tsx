@@ -51,16 +51,52 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
       philanthropicAllocation: 0.5,
       familyAllocation: 0.5,
       impactPremium: 0.02,
-      assets: [],
-      charitableVehicles: [],
-      familyMembers: [],
+      assets: [
+        {
+          id: "asset1",
+          assetClass: "equity",
+          currentValue: 1000000,
+          annualReturn: 0.07,
+          annualVolatility: 0.18,
+          correlationGroup: 1,
+          esgAligned: true,
+          impactFocused: false,
+        },
+      ],
+      charitableVehicles: [
+        {
+          id: "vehicle1",
+          type: "privateFoundation",
+          currentValue: 500000,
+          annualContribution: 50000,
+          annualAdminCosts: 0.01,
+          distributionRequirement: 0.05,
+          investmentStrategy: "balanced",
+          familyInvolvement: 100,
+          missionStatement: "Supporting education and healthcare initiatives",
+          causeAreas: ["education", "healthcare"],
+        },
+      ],
+      familyMembers: [
+        {
+          id: "member1",
+          age: 45,
+          lifeExpectancy: 85,
+          annualIncome: 200000,
+          annualExpenses: 150000,
+          philanthropicInterest: 0.8,
+          timeCommitment: 100,
+          successorFlag: true,
+          causeAreas: ["education", "healthcare"],
+        },
+      ],
       legacyPlan: {
-        missionStatement: "",
+        missionStatement: "Building a sustainable philanthropic legacy",
         sunsetting: false,
         successorPolicy: "familyOnly",
         minimumFamilyInvolvement: 0.5,
         governanceStructure: "familyBoard",
-        impactMeasurementFramework: "",
+        impactMeasurementFramework: "SDG-based",
         primaryCharitableEntity: "privateFoundation",
         philanthropicPercentage: 0.5,
       },
@@ -269,7 +305,22 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
               </Button>
             </div>
           ))}
-          <Button type="button" onClick={() => appendAsset({} as Asset)}>
+          <Button
+            type="button"
+            onClick={() =>
+              appendAsset({
+                id: `asset${assetFields.length + 1}`,
+                assetClass: "equity",
+                currentValue: 0,
+                annualReturn: 0.07,
+                annualVolatility: 0.18,
+                correlationGroup: 1,
+                esgAligned: false,
+                impactFocused: false,
+                causeAreas: [],
+              } as Asset)
+            }
+          >
             Add Asset
           </Button>
         </Card>
