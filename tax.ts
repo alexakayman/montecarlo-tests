@@ -1,4 +1,4 @@
-import { Asset, AssetClass } from "./src/types";
+import { Asset } from "./src/types";
 
 // Family Office Tax Optimization Monte Carlo Simulation
 
@@ -11,6 +11,21 @@ type EntityType =
   | "familyLimitedPartnership"
   | "llc"
   | "foundation";
+
+// Extend the base Asset type for tax calculations
+interface TaxAsset extends Asset {
+  costBasis: number;
+  jurisdiction: Jurisdiction;
+  entityType: EntityType;
+  incomePct: number;
+  holdingPeriod: number; // Days held
+  isTaxDeferred: boolean;
+  taxLots: Array<{
+    purchaseDate: Date;
+    purchasePrice: number;
+    quantity: number;
+  }>;
+}
 
 interface TaxRates {
   ordinaryIncome: Record<Jurisdiction, number>;
@@ -38,10 +53,9 @@ interface HarvestingStrategy {
 interface TaxOptimizationConfig {
   simulationYears: number;
   simulationRuns: number;
-  assets: Asset[];
+  assets: TaxAsset[];
   taxRates: TaxRates;
   harvestingStrategies: HarvestingStrategy[];
-  rebalancingFrequency: number; // In months
   annualWithdrawal: number; // Family office spending needs
   inflationRate: number;
   entityTransferCosts: Record<EntityType, number>; // Costs to establish/transfer to entity
@@ -135,19 +149,29 @@ const defaultTaxRates: TaxRates = {
 };
 
 // Sample portfolio for a family office
-const sampleAssets: Asset[] = [
+const sampleAssets: TaxAsset[] = [
   {
-    id: "US-Large-Cap-Equity",
+    id: "US-Equity-Portfolio",
     assetClass: "equity",
     currentValue: 50000000,
     costBasis: 30000000,
     jurisdiction: "US",
     entityType: "individual",
     annualReturn: 0.07,
-    annualVolatility: 0.16,
+    annualVolatility: 0.15,
+    correlationGroup: 1,
+    esgAligned: false,
+    impactFocused: false,
+    holdingPeriod: 365,
+    isTaxDeferred: false,
     incomePct: 0.02, // Dividend yield
-    appreciationPct: 0.05,
-    holdingPeriod: 5,
+    taxLots: [
+      {
+        purchaseDate: new Date("2020-01-01"),
+        purchasePrice: 100,
+        quantity: 500000,
+      },
+    ],
   },
   {
     id: "US-Treasuries",
@@ -158,9 +182,19 @@ const sampleAssets: Asset[] = [
     entityType: "revocableTrust",
     annualReturn: 0.03,
     annualVolatility: 0.05,
-    incomePct: 0.03, // Yield
-    appreciationPct: 0.0,
+    correlationGroup: 2,
+    esgAligned: true,
+    impactFocused: false,
     holdingPeriod: 3,
+    isTaxDeferred: false,
+    incomePct: 0.03, // Yield
+    taxLots: [
+      {
+        purchaseDate: new Date("2023-01-01"),
+        purchasePrice: 1000,
+        quantity: 30000,
+      },
+    ],
   },
   {
     id: "Real-Estate-Portfolio",
@@ -171,9 +205,19 @@ const sampleAssets: Asset[] = [
     entityType: "llc",
     annualReturn: 0.06,
     annualVolatility: 0.12,
-    incomePct: 0.04, // Rental income
-    appreciationPct: 0.02,
+    correlationGroup: 3,
+    esgAligned: true,
+    impactFocused: true,
     holdingPeriod: 10,
+    isTaxDeferred: false,
+    incomePct: 0.04, // Rental income
+    taxLots: [
+      {
+        purchaseDate: new Date("2015-01-01"),
+        purchasePrice: 15000000,
+        quantity: 1,
+      },
+    ],
   },
   {
     id: "Private-Equity-Fund",
@@ -184,9 +228,19 @@ const sampleAssets: Asset[] = [
     entityType: "familyLimitedPartnership",
     annualReturn: 0.12,
     annualVolatility: 0.25,
-    incomePct: 0.01,
-    appreciationPct: 0.11,
+    correlationGroup: 4,
+    esgAligned: false,
+    impactFocused: false,
     holdingPeriod: 7,
+    isTaxDeferred: false,
+    incomePct: 0.01,
+    taxLots: [
+      {
+        purchaseDate: new Date("2018-01-01"),
+        purchasePrice: 18000000,
+        quantity: 1,
+      },
+    ],
   },
   {
     id: "Hedge-Fund-Allocation",
@@ -197,9 +251,19 @@ const sampleAssets: Asset[] = [
     entityType: "irrevocableTrust",
     annualReturn: 0.09,
     annualVolatility: 0.14,
-    incomePct: 0.02,
-    appreciationPct: 0.07,
+    correlationGroup: 5,
+    esgAligned: true,
+    impactFocused: false,
     holdingPeriod: 4,
+    isTaxDeferred: false,
+    incomePct: 0.02,
+    taxLots: [
+      {
+        purchaseDate: new Date("2021-01-01"),
+        purchasePrice: 15000000,
+        quantity: 1,
+      },
+    ],
   },
 ];
 
@@ -215,18 +279,16 @@ function randomNormal(mean: number, stdDev: number): number {
 
 // Simulate asset performance with random returns
 function simulateAssetPerformance(
-  asset: Asset,
+  asset: TaxAsset,
   years: number
 ): Array<{
   value: number;
   income: number;
-  appreciation: number;
   loss: number;
 }> {
   const results: Array<{
     value: number;
     income: number;
-    appreciation: number;
     loss: number;
   }> = [];
   let currentValue = asset.currentValue;
@@ -240,18 +302,14 @@ function simulateAssetPerformance(
 
     // Calculate components
     const income = currentValue * asset.incomePct;
-    const appreciation =
-      currentValue *
-      (annualReturn > 0 ? Math.min(annualReturn, asset.appreciationPct) : 0);
     const loss = currentValue * (annualReturn < 0 ? -annualReturn : 0);
 
     // Update current value
-    currentValue = currentValue + income + appreciation - loss;
+    currentValue = currentValue + income - loss;
 
     results.push({
       value: currentValue,
       income,
-      appreciation,
       loss,
     });
   }
@@ -261,11 +319,10 @@ function simulateAssetPerformance(
 
 // Calculate taxes for a specific asset based on jurisdiction and entity type
 function calculateAssetTaxes(
-  asset: Asset,
+  asset: TaxAsset,
   performance: Array<{
     value: number;
     income: number;
-    appreciation: number;
     loss: number;
   }>,
   taxRates: TaxRates,
@@ -286,7 +343,7 @@ function calculateAssetTaxes(
   const entityModifiers = taxRates.entitySpecificRates[entityType];
 
   for (let year = 0; year < performance.length; year++) {
-    const { income, appreciation, loss, value } = performance[year];
+    const { income, loss, value } = performance[year];
 
     // Income taxes (dividends, interest, etc.)
     const incomeRate =
@@ -295,12 +352,10 @@ function calculateAssetTaxes(
     incomeTax += yearlyIncomeTax;
 
     // Tax-loss harvesting
-    let harvestedLossThisYear = 0;
     if (
       loss > value * harvestingStrategy.threshold &&
       loss <= harvestingStrategy.maxAnnualLoss
     ) {
-      harvestedLossThisYear = loss;
       harvestedLosses += loss;
       adjustedCostBasis -= loss; // Adjust cost basis after harvest
     }
@@ -340,7 +395,7 @@ function calculateAssetTaxes(
 
 // Evaluate different entity and jurisdiction combinations
 function evaluateEntityJurisdictionCombinations(
-  assets: Asset[],
+  assets: TaxAsset[],
   taxRates: TaxRates,
   simulationYears: number,
   entityTransferCosts: Record<EntityType, number>
@@ -349,22 +404,6 @@ function evaluateEntityJurisdictionCombinations(
   optimalJurisdictionMix: Record<Jurisdiction, number>;
   totalValue: number;
 } {
-  const jurisdictions: Jurisdiction[] = [
-    "US",
-    "UK",
-    "Switzerland",
-    "Singapore",
-    "Cayman",
-  ];
-  const entityTypes: EntityType[] = [
-    "individual",
-    "revocableTrust",
-    "irrevocableTrust",
-    "familyLimitedPartnership",
-    "llc",
-    "foundation",
-  ];
-
   let bestValue = 0;
   let bestEntityMix: Record<EntityType, number> = {
     individual: 0,
@@ -385,16 +424,40 @@ function evaluateEntityJurisdictionCombinations(
   // Generate all possible combinations (simplified - in reality would use optimization algorithms)
   // For this example, we'll just test some common combinations
   const combinations = [
-    { entityType: "individual", jurisdiction: "US" },
-    { entityType: "revocableTrust", jurisdiction: "US" },
-    { entityType: "irrevocableTrust", jurisdiction: "US" },
-    { entityType: "familyLimitedPartnership", jurisdiction: "US" },
-    { entityType: "llc", jurisdiction: "US" },
-    { entityType: "foundation", jurisdiction: "US" },
-    { entityType: "individual", jurisdiction: "Singapore" },
-    { entityType: "irrevocableTrust", jurisdiction: "Singapore" },
-    { entityType: "individual", jurisdiction: "Cayman" },
-    { entityType: "llc", jurisdiction: "Cayman" },
+    {
+      entityType: "individual" as EntityType,
+      jurisdiction: "US" as Jurisdiction,
+    },
+    {
+      entityType: "revocableTrust" as EntityType,
+      jurisdiction: "US" as Jurisdiction,
+    },
+    {
+      entityType: "irrevocableTrust" as EntityType,
+      jurisdiction: "US" as Jurisdiction,
+    },
+    {
+      entityType: "familyLimitedPartnership" as EntityType,
+      jurisdiction: "US" as Jurisdiction,
+    },
+    { entityType: "llc" as EntityType, jurisdiction: "US" as Jurisdiction },
+    {
+      entityType: "foundation" as EntityType,
+      jurisdiction: "US" as Jurisdiction,
+    },
+    {
+      entityType: "individual" as EntityType,
+      jurisdiction: "Singapore" as Jurisdiction,
+    },
+    {
+      entityType: "irrevocableTrust" as EntityType,
+      jurisdiction: "Singapore" as Jurisdiction,
+    },
+    {
+      entityType: "individual" as EntityType,
+      jurisdiction: "Cayman" as Jurisdiction,
+    },
+    { entityType: "llc" as EntityType, jurisdiction: "Cayman" as Jurisdiction },
   ];
 
   for (const combo of combinations) {
@@ -480,22 +543,21 @@ function runTaxOptimizationMonteCarlo(
     assets,
     taxRates,
     harvestingStrategies,
-    rebalancingFrequency,
     annualWithdrawal,
     inflationRate,
     entityTransferCosts,
   } = config;
 
-  let totalAfterTaxValues: number[] = [];
-  let totalTaxesPaid: number[] = [];
-  let totalHarvestedLosses: number[] = [];
-  let entityMixes: Record<EntityType, number>[] = [];
-  let jurisdictionMixes: Record<Jurisdiction, number>[] = [];
+  const totalAfterTaxValues: number[] = [];
+  const totalTaxesPaid: number[] = [];
+  const totalHarvestedLosses: number[] = [];
+  const entityMixes: Record<EntityType, number>[] = [];
+  const jurisdictionMixes: Record<Jurisdiction, number>[] = [];
   let successfulRuns = 0;
 
   // Run multiple simulations
   for (let run = 0; run < simulationRuns; run++) {
-    let portfolioValue = assets.reduce(
+    const portfolioValue = assets.reduce(
       (sum, asset) => sum + asset.currentValue,
       0
     );
@@ -519,7 +581,6 @@ function runTaxOptimizationMonteCarlo(
     jurisdictionMixes.push(optimalJurisdictionMix);
 
     // Update best harvesting strategy
-    let bestHarvestingStrategy = harvestingStrategies[0];
     let bestHarvestingValue = 0;
 
     for (const strategy of harvestingStrategies) {
@@ -543,7 +604,6 @@ function runTaxOptimizationMonteCarlo(
 
       if (strategyValue > bestHarvestingValue) {
         bestHarvestingValue = strategyValue;
-        bestHarvestingStrategy = strategy;
         totalTaxes = strategyTaxes;
         totalHarvested = strategyHarvested;
         portfolioAfterTaxValue = strategyValue;
@@ -640,7 +700,6 @@ const simulationConfig: TaxOptimizationConfig = {
     { threshold: 0.1, maxAnnualLoss: 3000000, reinvestmentDelay: 31 },
     { threshold: 0.15, maxAnnualLoss: 5000000, reinvestmentDelay: 31 },
   ],
-  rebalancingFrequency: 12, // Annual rebalancing
   annualWithdrawal: 5000000, // $5M annual withdrawal for family needs
   inflationRate: 0.02,
   entityTransferCosts: {

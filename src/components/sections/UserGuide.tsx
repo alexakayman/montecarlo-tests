@@ -102,9 +102,9 @@ export function UserGuide() {
       <h2>What is Philanthropic Planning?</h2>
       <p>
         Philanthropic planning is the strategic approach to charitable giving
-        that aligns a family's values, wealth management objectives, and desired
-        social impact. For family offices, it involves creating a structured
-        framework that optimizes giving while balancing:
+        that aligns a family&apos;s values, wealth management objectives, and
+        desired social impact. For family offices, it involves creating a
+        structured framework that optimizes giving while balancing:
       </p>
       <ul>
         <li>
@@ -123,7 +123,7 @@ export function UserGuide() {
       <p>
         This Monte Carlo simulation tool helps model various philanthropic
         strategies across multiple scenarios to identify optimal approaches for
-        your family's unique situation.
+        your family&apos;s unique situation.
       </p>
 
       <h2>How to Use This Tool</h2>
@@ -131,7 +131,7 @@ export function UserGuide() {
       <h3>Input Sections</h3>
 
       <h4>1. Asset Portfolio</h4>
-      <p>This section captures your family's investment portfolio:</p>
+      <p>This section captures your family&apos;s investment portfolio:</p>
       <div className="overflow-x-auto">
         <table>
           <thead>
@@ -145,7 +145,7 @@ export function UserGuide() {
             <tr>
               <td>Asset ID</td>
               <td>Identifier for the asset</td>
-              <td>E.g., "US Equities", "Bond Portfolio"</td>
+              <td>E.g., &quot;US Equities&quot;, &quot;Bond Portfolio&quot;</td>
             </tr>
             <tr>
               <td>Asset Class</td>
@@ -206,7 +206,7 @@ export function UserGuide() {
             <tr>
               <td>Vehicle ID</td>
               <td>Identifier for the vehicle</td>
-              <td>E.g., "Family Foundation", "DAF"</td>
+              <td>E.g., &quot;Family Foundation&quot;, &quot;DAF&quot;</td>
             </tr>
             <tr>
               <td>Type</td>
@@ -297,7 +297,7 @@ export function UserGuide() {
             <tr>
               <td>Member ID</td>
               <td>Identifier for family member</td>
-              <td>E.g., "Founder", "Child-1"</td>
+              <td>E.g., &quot;Founder&quot;, &quot;Child-1&quot;</td>
             </tr>
             <tr>
               <td>Age</td>
@@ -482,7 +482,7 @@ export function UserGuide() {
       <p>
         By thoughtfully configuring this simulation, you can develop a
         philanthropic strategy that creates meaningful impact while honoring
-        your family's values and financial needs.
+        your family&apos;s values and financial needs.
       </p>
     </div>
   );

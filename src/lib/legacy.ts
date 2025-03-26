@@ -352,13 +352,9 @@ export function runPhilanthropyLegacyMonteCarlo(
     charitableVehicles,
     familyMembers,
     legacyPlan,
-    withdrawalStrategy,
-    baseWithdrawalRate,
     inflationRate,
     familyGrowthRate,
-    taxRate,
     philanthropicAllocation,
-    familyAllocation,
     investmentStrategies,
     impactPremium,
     correlationMatrix,
@@ -401,20 +397,16 @@ export function runPhilanthropyLegacyMonteCarlo(
     ) as CharitableVehicle[];
 
     // Simulate portfolio performance
-    const {
-      portfolioByYear,
-      charitableAssetsByYear,
-      distributionsByYear,
-      familyAssetsByYear,
-    } = simulatePortfolioPerformance(
-      simulationAssets,
-      simulationVehicles,
-      correlationMatrix,
-      simulationYears,
-      inflationRate,
-      simulationStrategies,
-      impactPremium
-    );
+    const { charitableAssetsByYear, distributionsByYear, familyAssetsByYear } =
+      simulatePortfolioPerformance(
+        simulationAssets,
+        simulationVehicles,
+        correlationMatrix,
+        simulationYears,
+        inflationRate,
+        simulationStrategies,
+        impactPremium
+      );
 
     // Determine if this simulation meets family needs
     const finalFamilyAssets = familyAssetsByYear[familyAssetsByYear.length - 1];

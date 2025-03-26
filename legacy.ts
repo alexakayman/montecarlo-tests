@@ -1,4 +1,4 @@
-import { Asset, AssetClass } from "./src/types";
+import { AssetClass } from "./src/types";
 
 // Family Office Philanthropy and Legacy Planning Monte Carlo Simulation
 
@@ -15,7 +15,7 @@ type WithdrawalStrategy =
   | "endowmentModel"
   | "variablePercentage";
 
-interface Asset {
+interface LegacyAsset {
   id: string;
   assetClass: AssetClass;
   currentValue: number;
@@ -37,7 +37,7 @@ interface CharitableVehicle {
   causeAreas: string[]; // Focus areas for philanthropy
   missionStatement: string;
   familyInvolvement: number; // Hours per year of family time commitment
-  assets: Asset[]; // Assets held within the vehicle
+  assets: LegacyAsset[]; // Assets held within the vehicle
 }
 
 interface FamilyMember {
@@ -71,7 +71,7 @@ interface LegacyPlan {
 interface PhilanthropicSimulationConfig {
   simulationYears: number;
   simulationRuns: number;
-  assets: Asset[];
+  assets: LegacyAsset[];
   charitableVehicles: CharitableVehicle[];
   familyMembers: FamilyMember[];
   legacyPlan: LegacyPlan;
@@ -201,7 +201,7 @@ const defaultInvestmentStrategies = {
 };
 
 // SAMPLE INPUTS
-const sampleAssets: Asset[] = [
+const sampleAssets: LegacyAsset[] = [
   {
     id: "US-Equity-Portfolio",
     assetClass: "equity",
@@ -403,7 +403,7 @@ function randomNormal(mean: number, stdDev: number): number {
 
 // Generate correlated returns for a set of assets
 function generateCorrelatedReturns(
-  assets: Asset[],
+  assets: LegacyAsset[],
   correlationMatrix: number[][]
 ): number[] {
   // Map assets to their correlation groups
@@ -434,7 +434,7 @@ function generateCorrelatedReturns(
 
 // Simulate portfolio performance including charitable vehicles
 function simulatePortfolioPerformance(
-  assets: Asset[],
+  assets: LegacyAsset[],
   charitableVehicles: CharitableVehicle[],
   correlationMatrix: number[][],
   simulationYears: number,
@@ -982,7 +982,9 @@ function runPhilanthropyLegacyMonteCarlo(
   // Run multiple simulations
   for (let run = 0; run < simulationRuns; run++) {
     // Deep copy assets and vehicles for this simulation
-    const simulationAssets = JSON.parse(JSON.stringify(assets)) as Asset[];
+    const simulationAssets = JSON.parse(
+      JSON.stringify(assets)
+    ) as LegacyAsset[];
     const simulationVehicles = JSON.parse(
       JSON.stringify(charitableVehicles)
     ) as CharitableVehicle[];
