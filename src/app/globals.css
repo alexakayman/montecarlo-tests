@@ -8,7 +8,16 @@
   --background-start-rgb: 255, 255, 255;
   --background-end-rgb: 249, 250, 251;
   --primary: 34, 197, 94;
-  --primary-hover: 22, 163, 74;
+  --primary-hover: 16, 185, 129;
+  --popover: 255, 255, 255;
+  --popover-foreground: 17, 24, 39;
+  --accent: 243, 244, 246;
+  --accent-foreground: 17, 24, 39;
+  --muted: 243, 244, 246;
+  --muted-foreground: 107, 114, 128;
+  --border: 229, 231, 235;
+  --ring: 34, 197, 94;
+  --destructive: 239, 68, 68;
 }
 
 body {
@@ -23,7 +32,7 @@ body {
 
 /* Custom Form Styles */
 .form-input {
-  @apply rounded-md border border-gray-200 bg-white text-gray-900 shadow-sm focus:border-green-500 focus:ring-green-500;
+  @apply rounded-md border border-slate-100 bg-white text-gray-900 shadow-sm focus:border-green-500 focus:ring-green-500;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -42,16 +51,16 @@ body {
 
 /* Card Styles */
 .card {
-  @apply bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200;
+  @apply bg-white rounded shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200;
 }
 
 /* Button Styles */
 .btn-primary {
-  @apply bg-green-500 text-white hover:bg-green-600 transition-colors duration-200;
+  @apply bg-emerald-500 rounded text-white hover:bg-green-600 transition-colors duration-200;
 }
 
 .btn-secondary {
-  @apply bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200;
+  @apply bg-emerald-100 text-gray-900 hover:bg-emerald-200 transition-colors duration-200;
 }
 
 /* Form Label Styles */
