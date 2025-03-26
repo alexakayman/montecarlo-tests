@@ -4,9 +4,11 @@
 @tailwind utilities;
 
 :root {
-  --foreground-rgb: 255, 255, 255;
-  --background-start-rgb: 0, 0, 0;
-  --background-end-rgb: 17, 24, 39;
+  --foreground-rgb: 17, 24, 39;
+  --background-start-rgb: 255, 255, 255;
+  --background-end-rgb: 249, 250, 251;
+  --primary: 34, 197, 94;
+  --primary-hover: 22, 163, 74;
 }
 
 body {
@@ -21,7 +23,7 @@ body {
 
 /* Custom Form Styles */
 .form-input {
-  @apply rounded-md border border-gray-700 bg-gray-800 text-white shadow-sm focus:border-primary focus:ring-primary;
+  @apply rounded-md border border-gray-200 bg-white text-gray-900 shadow-sm focus:border-green-500 focus:ring-green-500;
 }
 
 /* Custom scrollbar for webkit browsers */
@@ -31,13 +33,59 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  @apply bg-gray-800 rounded-full;
+  @apply bg-gray-100 rounded-full;
 }
 
 ::-webkit-scrollbar-thumb {
-  @apply bg-gray-600 rounded-full;
+  @apply bg-gray-300 rounded-full hover:bg-gray-400;
 }
 
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-gray-500;
+/* Card Styles */
+.card {
+  @apply bg-white rounded-lg shadow-sm border border-gray-100 hover:shadow-md transition-shadow duration-200;
+}
+
+/* Button Styles */
+.btn-primary {
+  @apply bg-green-500 text-white hover:bg-green-600 transition-colors duration-200;
+}
+
+.btn-secondary {
+  @apply bg-gray-100 text-gray-900 hover:bg-gray-200 transition-colors duration-200;
+}
+
+/* Form Label Styles */
+.form-label {
+  @apply text-sm font-medium text-gray-700;
+}
+
+/* Form Description Styles */
+.form-description {
+  @apply text-sm text-gray-500;
+}
+
+/* Tab Styles */
+.tab-active {
+  @apply bg-green-500 text-white;
+}
+
+.tab-inactive {
+  @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+}
+
+/* Input Focus Styles */
+input:focus,
+select:focus,
+textarea:focus {
+  @apply outline-none ring-2 ring-green-500 border-green-500;
+}
+
+/* Select Styles */
+select {
+  @apply rounded-md border border-gray-200 bg-white text-gray-900 shadow-sm focus:border-green-500 focus:ring-green-500;
+}
+
+/* Checkbox Styles */
+.checkbox {
+  @apply rounded border-gray-300 text-green-500 focus:ring-green-500;
 }

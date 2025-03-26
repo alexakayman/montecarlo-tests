@@ -28,20 +28,31 @@ export default function Home() {
   };
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
+    <main className="flex min-h-screen flex-col items-center justify-between bg-gradient-to-b from-white to-gray-50">
       <Hero />
-      <div className="z-10 max-w-5xl w-full items-center justify-between font-mono text-sm">
+      <div className="z-10 max-w-5xl w-full items-center justify-between text-sm p-4">
         <Tabs defaultValue="simulation" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="simulation">Run Simulation</TabsTrigger>
-            <TabsTrigger value="guide">User Guide</TabsTrigger>
+          <TabsList className="grid w-full grid-cols-2 mb-8">
+            <TabsTrigger
+              value="simulation"
+              className="tab-inactive data-[state=active]:tab-active"
+            >
+              Run Simulation
+            </TabsTrigger>
+            <TabsTrigger
+              value="guide"
+              className="tab-inactive data-[state=active]:tab-active"
+            >
+              User Guide
+            </TabsTrigger>
           </TabsList>
-          <TabsContent value="simulation">
+          <TabsContent value="simulation" className="mt-0">
             <SimulationConfigForm onSubmit={handleSubmit} />
 
             {isLoading && (
               <div className="mt-8 text-center">
-                <p>Running simulation...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-green-500 border-t-transparent"></div>
+                <p className="mt-2 text-gray-600">Running simulation...</p>
               </div>
             )}
 
@@ -49,7 +60,7 @@ export default function Home() {
               <SimulationResults result={simulationResult} />
             )}
           </TabsContent>
-          <TabsContent value="guide">
+          <TabsContent value="guide" className="mt-0">
             <UserGuide />
           </TabsContent>
         </Tabs>

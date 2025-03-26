@@ -2,11 +2,11 @@ import React from "react";
 
 export function UserGuide() {
   return (
-    <div className="prose prose-slate max-w-none dark:prose-invert">
+    <div className="prose prose-slate max-w-none">
       <style jsx>{`
         .prose {
-          font-family: var(--font-geist-sans), system-ui, -apple-system,
-            sans-serif;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, sans-serif;
           font-size: 1em;
           line-height: 1.8;
           margin-bottom: 0.5em;
@@ -16,8 +16,8 @@ export function UserGuide() {
         h2,
         h3,
         h4 {
-          font-family: var(--font-geist-sans), system-ui, -apple-system,
-            sans-serif;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, sans-serif;
           font-weight: 600;
         }
 
@@ -55,8 +55,8 @@ export function UserGuide() {
           border-collapse: collapse;
           width: 100%;
           margin: 2em 0;
-          font-family: var(--font-geist-sans), system-ui, -apple-system,
-            sans-serif;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+            Roboto, "Helvetica Neue", Arial, sans-serif;
         }
 
         .prose th,
@@ -67,38 +67,33 @@ export function UserGuide() {
         }
 
         .prose th {
-          background-color: #242323;
+          background-color: #f9fafb;
           font-weight: 600;
+          color: #374151;
         }
 
         .prose tr:nth-child(even) {
-          background-color: #242323;
+          background-color: #f9fafb;
         }
 
-        .dark .prose th,
-        .dark .prose td {
-          border-color: #374151;
-          color: #e5e7eb;
+        .prose tr:hover {
+          background-color: #f3f4f6;
         }
 
-        .dark .prose th {
-          background-color: #1f2937;
+        .prose {
+          color: #374151;
         }
 
-        .dark .prose tr:nth-child(even) {
-          background-color: #111827;
+        .prose strong {
+          color: #111827;
         }
 
-        .dark .prose tr:hover {
-          background-color: #1f2937;
+        .bg-yellow-50 {
+          background-color: #fefce8;
         }
 
-        .dark .prose {
-          color: #e5e7eb;
-        }
-
-        .dark .prose strong {
-          color: #f3f4f6;
+        .text-yellow-800 {
+          color: #854d0e;
         }
       `}</style>
 
@@ -189,8 +184,8 @@ export function UserGuide() {
         </table>
       </div>
 
-      <div className="bg-yellow-50 dark:bg-yellow-900/20 p-4 rounded-lg my-4">
-        <p className="text-yellow-800 dark:text-yellow-200">
+      <div className="bg-yellow-50 p-4 rounded-lg my-4">
+        <p className="text-yellow-800">
           <strong>Note:</strong> Impact-focused investments may accept slightly
           lower financial returns in exchange for measurable social outcomes.
         </p>

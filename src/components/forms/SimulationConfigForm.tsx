@@ -139,19 +139,23 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Simulation Parameters</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Simulation Parameters
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
               name="simulationYears"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Simulation Years</FormLabel>
+                  <FormLabel className="form-label">Simulation Years</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input type="number" className="form-input" {...field} />
                   </FormControl>
-                  <FormDescription>Number of years to simulate</FormDescription>
+                  <FormDescription className="form-description">
+                    Number of years to simulate
+                  </FormDescription>
                 </FormItem>
               )}
             />
@@ -160,11 +164,11 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
               name="simulationRuns"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Simulation Runs</FormLabel>
+                  <FormLabel className="form-label">Simulation Runs</FormLabel>
                   <FormControl>
-                    <Input type="number" {...field} />
+                    <Input type="number" className="form-input" {...field} />
                   </FormControl>
-                  <FormDescription>
+                  <FormDescription className="form-description">
                     Number of Monte Carlo simulations to run
                   </FormDescription>
                 </FormItem>
@@ -173,12 +177,12 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Assets</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">Assets</h2>
           {assetFields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-2 gap-4 mb-4 p-4 border rounded"
+              className="grid grid-cols-2 gap-4 mb-4 p-4 border border-gray-100 rounded-lg bg-gray-50"
             >
               <FormField
                 control={form.control}
@@ -299,7 +303,7 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
               <Button
                 type="button"
                 onClick={() => removeAsset(index)}
-                className="col-span-2"
+                className="col-span-2 btn-secondary"
               >
                 Remove Asset
               </Button>
@@ -320,17 +324,20 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
                 causeAreas: [],
               } as Asset)
             }
+            className="btn-primary"
           >
             Add Asset
           </Button>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Charitable Vehicles</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Charitable Vehicles
+          </h2>
           {vehicleFields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-2 gap-4 mb-4 p-4 border rounded"
+              className="grid grid-cols-2 gap-4 mb-4 p-4 border border-gray-100 rounded-lg bg-gray-50"
             >
               <FormField
                 control={form.control}
@@ -475,7 +482,7 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
               <Button
                 type="button"
                 onClick={() => removeVehicle(index)}
-                className="col-span-2"
+                className="col-span-2 btn-secondary"
               >
                 Remove Vehicle
               </Button>
@@ -484,17 +491,20 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           <Button
             type="button"
             onClick={() => appendVehicle({} as CharitableVehicle)}
+            className="btn-primary"
           >
             Add Charitable Vehicle
           </Button>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Family Members</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Family Members
+          </h2>
           {memberFields.map((field, index) => (
             <div
               key={field.id}
-              className="grid grid-cols-2 gap-4 mb-4 p-4 border rounded"
+              className="grid grid-cols-2 gap-4 mb-4 p-4 border border-gray-100 rounded-lg bg-gray-50"
             >
               <FormField
                 control={form.control}
@@ -604,7 +614,7 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
               <Button
                 type="button"
                 onClick={() => removeMember(index)}
-                className="col-span-2"
+                className="col-span-2 btn-secondary"
               >
                 Remove Member
               </Button>
@@ -613,13 +623,16 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           <Button
             type="button"
             onClick={() => appendMember({} as FamilyMember)}
+            className="btn-primary"
           >
             Add Family Member
           </Button>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Legacy Plan</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Legacy Plan
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -775,8 +788,10 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Withdrawal Strategy</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Withdrawal Strategy
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -827,8 +842,10 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Economic Parameters</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Economic Parameters
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -863,8 +880,10 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           </div>
         </Card>
 
-        <Card className="p-6">
-          <h2 className="text-lg font-semibold mb-4">Allocation Parameters</h2>
+        <Card className="p-6 card">
+          <h2 className="text-lg font-semibold mb-4 text-gray-900">
+            Allocation Parameters
+          </h2>
           <div className="grid grid-cols-2 gap-4">
             <FormField
               control={form.control}
@@ -929,7 +948,7 @@ export function SimulationConfigForm({ onSubmit }: SimulationConfigFormProps) {
           </div>
         </Card>
 
-        <Button type="submit" className="w-full">
+        <Button type="submit" className="w-full btn-primary">
           Run Simulation
         </Button>
       </form>
